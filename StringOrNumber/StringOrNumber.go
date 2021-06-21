@@ -59,13 +59,23 @@ func main() {
 
 }
 
-type User struct {
-	ID      IntString `json:"id"`
-	Address Address   `json:"address"`
-	Age     IntString `json:"age"`
-}
+//type User struct {
+//	ID      IntString `json:"id"`
+//	Address Address   `json:"address"`
+//	Age     IntString `json:"age"`
+//}
+//
+//type Address struct {
+//	CityID IntString `json:"city_id"`
+//	Street string    `json:"street"`
+//}
 
+type User struct {
+	ID      IntString `xml:"id"`
+	Address Address   `xml:"address"`
+	Age     IntString `xml:"age"`
+}
 type Address struct {
-	CityID IntString `json:"city_id"`
-	Street string    `json:"street"`
+	CityID IntString `xml:"city_id"`
+	Street string    `xml:"street"`
 }
