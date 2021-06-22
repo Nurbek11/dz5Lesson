@@ -1,32 +1,40 @@
 package main
 
 import (
-	"fmt"
 	"reflect"
+	"regexp"
+	"time"
 )
 
-type model struct {
-	firstField  int
-	secondField string
-}
-
 func main() {
-	var b = model{12, "af"}
-	cyrillic(b)
-	//BindStruct(&b)
+
+	p := Person{
+		Name:      "NurbekГОДЕВ",
+		Surname:   "Nessipbay",
+		Age:       21,
+		Birthdate: time.Time{},
+	}
+	deleteCyrillic(&p)
 }
 
-func cyrillic(a interface{}) {
-	//e := reflect.ValueOf(&a).Elem()
-	val := reflect.ValueOf(a)
-	//fmt.Println(e)
+type Person struct {
+	Name      string
+	Surname   string
+	Age       int
+	Birthdate time.Time
+}
 
-	for i := 0; i < val.NumField(); i++ {
-		//valueField := val.Field(i)
-		//typeField := val.Type().Field(i).Name
-		fmt.Println(val.Field(i))
-		//fmt.Println(typeField)
-		//val.Field(i) =
+func deleteCyrillic(s *Person) []string {
+	v := reflect.ValueOf(*s)
+
+	var array []string
+
+	for i := 0; i < v.NumField(); i++ {
+		if v.Field(i).Type().String() == "string" {
+			re := regexp.MustCompile("[[:^ascii:]]")
+			var a = re.ReplaceAllLiteralString(v.Field(i).String(), "")
+			array =  append(array,a)
+		}
 	}
-
+	return array
 }
