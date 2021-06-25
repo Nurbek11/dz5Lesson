@@ -4,95 +4,35 @@ import (
 	"fmt"
 	"reflect"
 	"regexp"
-	"time"
 )
-
-type Person interface {
-	change()
-}
-
-type John struct {
-	Name      string
-	Surname   string
-	Age       int
-	Birthdate time.Time
-}
-type Ben struct {
-	Name string
-}
-
-func deleteCyrillic(person Person) {
-	person.change()
-}
-
-func (c *John) change() {
-	v := reflect.ValueOf(*c)
-	for i := 0; i < v.NumField(); i++ {
-		if v.Field(i).Kind() == reflect.String {
-			re := regexp.MustCompile("[[:^ascii:]]")
-			var a = re.ReplaceAllLiteralString(v.Field(i).String(), "")
-			switch i {
-			case 0:
-				c.Name = a
-				break
-			case 1:
-				c.Surname = a
-				break
-			default:
-				continue
-			}
-
-			//Tried but FAILED
-			//fieldValue := reflect.ValueOf(v.Field(i))
-			//if fieldValue.CanSet() {
-			//	fieldValue.SetString(a)
-			//}
-
-		}
-
-	}
-}
-func (c *Ben) change() {
-	v := reflect.ValueOf(*c)
-	for i := 0; i < v.NumField(); i++ {
-		if v.Field(i).Kind() == reflect.String {
-			re := regexp.MustCompile("[[:^ascii:]]")
-			var a = re.ReplaceAllLiteralString(v.Field(i).String(), "")
-			switch i {
-			case 0:
-				c.Name = a
-				break
-			default:
-				continue
-			}
-
-			//Tried but FAILED
-			//fieldValue := reflect.ValueOf(v.Field(i))
-			//if fieldValue.CanSet() {
-			//	fieldValue.SetString(a)
-			//}
-
-		}
-
-	}
-}
 
 func main() {
 
-	john := John{
-		Name:      "NurbekГОДЕВ",
-		Surname:   "Nessipbay",
-		Age:       21,
-		Birthdate: time.Time{},
+	g := Foo{Bar: "NurbekГОДЕВ"}
+	deleteCyrillic(&g)
+	fmt.Println(g)
+}
+
+type Foo struct {
+	Id, Bar string
+}
+
+func deleteCyrillic(data interface{}) {
+	val := reflect.ValueOf(data).Elem()
+
+	v := reflect.ValueOf(data)
+	i := reflect.Indirect(v)
+	t := i.Type()
+
+	if t.Kind() == reflect.Struct {
+		for i := 0; i < t.NumField(); i++ {
+			if (t.Field(i).Type).String() == "string" {
+				re := regexp.MustCompile("[[:^ascii:]]")
+				var a = re.ReplaceAllLiteralString(val.Field(i).String(), "")
+				val.FieldByName(t.Field(i).Name).SetString(a)
+			}
+		}
+	} else {
+		fmt.Println("not a stuct")
 	}
-
-	ben := Ben{
-		Name: "Ben ПЫХЕР",
-	}
-
-	deleteCyrillic(&john)
-	deleteCyrillic(&ben)
-
-	fmt.Println(john, ben)
-
 }
